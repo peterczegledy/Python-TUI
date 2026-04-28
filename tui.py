@@ -15,7 +15,14 @@ BORDERS = {
 class AdvancedWindow:
     def __init__(self, titles:list, sizesx:list[int], sizesy:list[int], borderstyle: str):
         """
-        borderstyle: The style of the border: 1 single / 2 double
+            Border styles: \n
+            SINGLELIGHT: ─│┌┐└┘├┤┬┴┼\n
+            SINGLEHEAVY: ━┃┏┓┗┛┣┫┳┻╋\n
+            DOUBLE: ═║╔╗╚╝╠╣╦╩╬\n
+            DOUBLEH: ═│╒╕╘╛╞╡╤╧╪\n
+            DOUBLEV: ─║╓╖╙╜╟╢╥╨╫\n
+            ROUNDED: ─│╭╮╰╯├┤┬┴┼\n
+            TRIPLEDASHLIGHT: ┄┆┌┐└┘├┤┬┴┼\n
         """
         self.titles = titles
         self.sizesx = sizesx
@@ -52,6 +59,50 @@ class AdvancedWindow:
 
         return output
 
+class Label:
+    def __init__(self, text: str, posx: int, posy: int):
+        self.text = text
+        self.posx = posx
+        self.posy = posy
+
+    def draw(self):
+        output = ""
+        for i in range(self.posy - 1):
+            output += ("¤" * (len(self.text)+self.posx-1)) + "\n"
+        output += ("¤" * (self.posx - 1)) + self.text+ "\n"
+        return output
+
+class Textbox:
+    def __init__(self, id: int, width: int, posx: int, posy: int, ispassword:bool):
+        self.id = id
+        self.width = width
+        self.text = ""
+        self.posx = posx
+        self.posy = posy
+        self.active = False
+        self.ispassword = ispassword
+
+    def keypress(self, key):
+        if len(self.text) < self.width:
+            if len(str(key)[1:-1]) == 1:
+                self.text += str(key)[1:-1]
+            elif (str(key)) == "Key.space":
+                self.text += " "
+        if (str(key)) == "Key.backspace":
+            self.text = self.text[:-1]
+
+    def draw(self):
+        output = ""
+        if self.ispassword:text = (len(self.text)*"*") + "_" * (self.width - len(self.text))   
+        else:text = self.text + "_" * (self.width - len(self.text))
+        for i in range(self.posy - 1):
+            output += ("¤" * (len(text)+self.posx-1)) + "\n"
+        if self.active:
+            output += ("¤" * (self.posx - 1))+text+"*"+"\n"
+        else:
+            output += ("¤" * (self.posx - 1))+text+"\n"
+        return output
+
 def render_screen(a):
     pass
 
@@ -85,11 +136,11 @@ def run(objects):
     index = 0
     win = window.CursesDrawer()
 
-    # curses futtatása külön threadben
+
     t = threading.Thread(target=win.start, daemon=True)
     t.start()
 
-    # fő loop a modulban
+
     running = True
     while running:
         key = win.get_key()
@@ -102,6 +153,22 @@ def run(objects):
                 if index - 1 >= 0:
                     index -= 1
 
+            for obj in objects:
+                if isinstance(obj, (Textbox)):#, Button, Checkbox, Listbox, Table, Slider, MultilineTextbox))
+                    obj.active = False
+                    if obj.id == index:
+                        obj.active = True
+
+            if 32 <= key <= 126:
+                char = chr(key)
+                for obj in objects:
+                    if isinstance(obj, Textbox) and obj.active:
+                        obj.keypress(char)
+                        print(char)
+
+
+
+            # draw
             layers = []
             for obj in objects:
                 layers.append(obj.draw())
@@ -111,9 +178,7 @@ def run(objects):
                 running = False
                 win.stop()
 
-        # itt lehet más logika
         time.sleep(0.05)
 
-# ha scriptként futtatod:
 if __name__ == "__main__":
     run([])
