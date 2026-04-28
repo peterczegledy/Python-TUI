@@ -40,7 +40,7 @@ class AdvancedWindow:
                         output+=self.titles[y][x]+BORDERS[self.borderstyle][0]*(self.sizesx[x]-len(self.titles[y][x]))+BORDERS[self.borderstyle][10]
                     else:
                         output+=self.titles[y][x]+BORDERS[self.borderstyle][0]*(self.sizesx[x]-len(self.titles[y][x]))+BORDERS[self.borderstyle][7]+"\n"
-            for j in range(self.sizesy[y]):
+            for _ in range(self.sizesy[y]):
                 for i in range(self.boxesx):
                     output +=(BORDERS[self.borderstyle][1]+(" "*self.sizesx[i]))
                 output+=BORDERS[self.borderstyle][1]+"\n"
