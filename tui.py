@@ -8,8 +8,7 @@ BORDERS = {
     "DOUBLE": "═║╔╗╚╝╠╣╦╩╬",
     "DOUBLEH": "═│╒╕╘╛╞╡╤╧╪",
     "DOUBLEV": "─║╓╖╙╜╟╢╥╨╫",
-    "ROUNDED": "─│╭╮╰╯├┤┬┴┼",
-    "TRIPLEDASHLIGHT": "┄┆┌┐└┘├┤┬┴┼",
+    "ROUNDED": "─│╭╮╰╯├┤┬┴┼"
 }
 
 class AdvancedWindow:
@@ -22,7 +21,6 @@ class AdvancedWindow:
             DOUBLEH: ═│╒╕╘╛╞╡╤╧╪\n
             DOUBLEV: ─║╓╖╙╜╟╢╥╨╫\n
             ROUNDED: ─│╭╮╰╯├┤┬┴┼\n
-            TRIPLEDASHLIGHT: ┄┆┌┐└┘├┤┬┴┼\n
         """
         self.titles = titles
         self.sizesx = sizesx
@@ -95,7 +93,7 @@ class Textbox:
         output = ""
         if self.ispassword:text = (len(self.text)*"*") + "_" * (self.width - len(self.text))   
         else:text = self.text + "_" * (self.width - len(self.text))
-        for i in range(self.posy - 1):
+        for _ in range(self.posy - 1):
             output += ("¤" * (len(text)+self.posx-1)) + "\n"
         if self.active:
             output += ("¤" * (self.posx - 1))+text+"*"+"\n"
@@ -164,7 +162,7 @@ def run(objects):
                 for obj in objects:
                     if isinstance(obj, Textbox) and obj.active:
                         obj.keypress(char)
-                        print(char)
+                        print(char, type(char))
 
 
 
